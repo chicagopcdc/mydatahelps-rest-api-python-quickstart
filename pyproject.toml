@@ -1,22 +1,24 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
-name = "mydatahelps_client"
+name = "quickstart"
 version = "0.1.0"
 description = "Quickstart for using MyDataHelps REST API in Python"
 authors = ["Your Name <your.email@example.com>"]
 license = "MIT"
 
-packages = [{ include = "quickstart.py" }]
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "2.32.3"
+PyJWT = "2.10.1"
+cryptography = "43.0.3"
+python-dotenv = "1.0.1"
 
 [poetry.group.dev.dependencies]
-python = "^3.9"
-requests = "*"
-PyJWT = "*"
-cryptography = "*"
-python-dotenv = "*"
-
-[tool.poetry.dev-dependencies]
 pytest = "*"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+packages = [{ include = "quickstart.py" }]
+
+
