@@ -7,13 +7,6 @@ import jwt
 import requests  
 from dotenv import load_dotenv 
 
-load_dotenv()
-
-# Environment variables read from .env file
-private_key = os.getenv('RKS_PRIVATE_KEY')
-service_account_name = os.getenv('RKS_SERVICE_ACCOUNT')
-project_id = os.getenv('RKS_PROJECT_ID')
-
 base_url = 'https://mydatahelps.org'
 token_url = f'{base_url}/identityserver/connect/token' 
 
@@ -109,51 +102,61 @@ def get_participant_access_token(
     return response.json()["access_token"]
     
 
-# Get a service access token, needed for all API calls.
-service_access_token = get_service_access_token()
-print(f'Obtained service access token:\n{service_access_token}')
+# Global code that should not run on import
+if __name__ == "__main__":
+    load_dotenv()
 
-# Get all participants
-url = f'/api/v1/administration/projects/{project_id}/participants'
-response = get_from_api(service_access_token, url)
-participants = response.json()['totalParticipants']
-print(f'\nTotal participants: {participants}')
+    # Environment variables read from .env file
+    private_key = os.getenv('RKS_PRIVATE_KEY')
+    service_account_name = os.getenv('RKS_SERVICE_ACCOUNT')
+    project_id = os.getenv('RKS_PROJECT_ID')
 
-url = f'/api/v1/administration/projects/{project_id}/participants'
-body_obj = {
-  "invitationStatus": "approved",
-  "demographics": {
-    "email": "d4cg.tech@gmail.com",
-    "firstName": "Luca",
-    "middleName": "",
-    "lastName": "Graglia"
-  },
-  "customFields": {
-    "redCap_id": 1
-  }
-}
-payload = json.dumps(body_obj)
-response = put_to_api(service_access_token, url, body_str=payload) # requests.request("PUT", url, headers=headers, data=payload)
-print(response)
 
-# Get a specific participant by identifier. We disable 'raise_error' here
-# so we can handle the 404 case ourselves.
-participant_identifier = "YOUR_PARTICIPANT_IDENTIFIER"
-if participant_identifier != "YOUR_PARTICIPANT_IDENTIFIER":
-    url = f'/api/v1/administration/projects/{project_id}/participants/{participant_identifier}'
-    response = get_from_api(service_access_token, url, {}, False)
-    if response.status_code == 404:
-      print(f'\nParticipant {participant_identifier} not found.')
-    else:
-      participant = response.json()
-      id = participant['id']
-      print(f'\nParticipant {participant_identifier} found with MDH ID {id}')
-  
-      # NOTE: This piece is only necessary when using MyDataHelps Embeddables in a custom app. 
-      # Most API use cases do NOT require a participant token.
-      # Be sure to:
-      # 1. Use the internal ID field (from participant['id'] above) and NOT participant_identifier
-      # 2. Request the correct scope(s) for your needs.
-      scopes = "Participant:read SurveyAnswers:read"
-      participant_access_token = get_participant_access_token(service_access_token, id, scopes)
-      print(f'\nObtained participant access token for {id}: {participant_access_token}')
+    # Get a service access token, needed for all API calls.
+    service_access_token = get_service_access_token()
+    print(f'Obtained service access token:\n{service_access_token}')
+
+    # Get all participants
+    url = f'/api/v1/administration/projects/{project_id}/participants'
+    response = get_from_api(service_access_token, url)
+    participants = response.json()['totalParticipants']
+    print(f'\nTotal participants: {participants}')
+
+    url = f'/api/v1/administration/projects/{project_id}/participants'
+    body_obj = {
+      "invitationStatus": "approved",
+      "demographics": {
+        "email": "d4cg.tech@gmail.com",
+        "firstName": "Luca",
+        "middleName": "",
+        "lastName": "Graglia"
+      },
+      "customFields": {
+        "redCap_id": 1
+      }
+    }
+    payload = json.dumps(body_obj)
+    response = put_to_api(service_access_token, url, body_str=payload) # requests.request("PUT", url, headers=headers, data=payload)
+    print(response)
+
+    # Get a specific participant by identifier. We disable 'raise_error' here
+    # so we can handle the 404 case ourselves.
+    participant_identifier = "YOUR_PARTICIPANT_IDENTIFIER"
+    if participant_identifier != "YOUR_PARTICIPANT_IDENTIFIER":
+        url = f'/api/v1/administration/projects/{project_id}/participants/{participant_identifier}'
+        response = get_from_api(service_access_token, url, {}, False)
+        if response.status_code == 404:
+          print(f'\nParticipant {participant_identifier} not found.')
+        else:
+          participant = response.json()
+          id = participant['id']
+          print(f'\nParticipant {participant_identifier} found with MDH ID {id}')
+      
+          # NOTE: This piece is only necessary when using MyDataHelps Embeddables in a custom app. 
+          # Most API use cases do NOT require a participant token.
+          # Be sure to:
+          # 1. Use the internal ID field (from participant['id'] above) and NOT participant_identifier
+          # 2. Request the correct scope(s) for your needs.
+          scopes = "Participant:read SurveyAnswers:read"
+          participant_access_token = get_participant_access_token(service_access_token, id, scopes)
+          print(f'\nObtained participant access token for {id}: {participant_access_token}')

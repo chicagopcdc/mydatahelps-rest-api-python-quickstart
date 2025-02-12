@@ -22,6 +22,11 @@ pip install requests
 pip install python-dotenv
 ```
 
+or:
+- `python -m venv env`
+- `env/bin/pip install poetry`
+- `env/bin/poetry install`
+
 ## Using the App
 
 To run the app:
