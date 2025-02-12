@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "mydatahelps-rest-api-python-quickstart"
+version = "0.1.0"
+description = "Quickstart for using MyDataHelps REST API in Python"
+authors = ["Your Name <your.email@example.com>"]
+license = "MIT"
+
+packages = [{ include = "quickstart.py" }]
+
+[poetry.group.dev.dependencies]
+python = "^3.9"
+requests = "*"
+PyJWT = "*"
+cryptography = "*"
+python-dotenv = "*"
+
+[tool.poetry.dev-dependencies]
+pytest = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
