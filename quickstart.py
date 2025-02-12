@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 base_url = 'https://mydatahelps.org'
 token_url = f'{base_url}/identityserver/connect/token' 
 
-def get_service_access_token():
+def get_service_access_token(service_account_name, private_key):
 
     assertion = {
       "iss": service_account_name,
@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
 
     # Get a service access token, needed for all API calls.
-    service_access_token = get_service_access_token()
+    service_access_token = get_service_access_token(service_account_name, private_key)
     print(f'Obtained service access token:\n{service_access_token}')
 
     # Get all participants
