@@ -1,10 +1,11 @@
 from datetime import datetime
 from uuid import uuid4
 import os
+import json
 from typing import Optional, Dict
-import jwt  # pip install PyJWT   and  pip install cryptography
-import requests  # pip install requests
-from dotenv import load_dotenv # pip install python-dotenv
+import jwt  
+import requests  
+from dotenv import load_dotenv 
 
 load_dotenv()
 
@@ -60,6 +61,33 @@ def get_from_api(
       
     return response
 
+
+def put_to_api(
+    service_access_token: str,
+    resource_url: str,
+    body_str: str = None,
+    body_dict: dict = None,
+    query_params: Optional[Dict[str, str]] = None,
+    raise_error: bool = True # Raise an error automatically if response is not a success
+) -> requests.Response:
+    if query_params is None:
+        query_params = {}
+
+    headers = {
+        "Authorization": f'Bearer {service_access_token}',
+        "Accept": "application/json",
+        "Content-Type":  "application/json; charset=utf-8"
+    }
+    
+    url = f'{base_url}{resource_url}'
+    response = requests.put(url=url, json=json.loads(body_str), data=body_str, params=query_params, headers=headers)
+    
+    if raise_error:
+      print(response.text)
+      response.raise_for_status()
+      
+    return response
+
 # Get a participant access token for the specified participant
 # Used for MyDataHelps Embeddables ONLY
 def get_participant_access_token(
@@ -90,6 +118,23 @@ url = f'/api/v1/administration/projects/{project_id}/participants'
 response = get_from_api(service_access_token, url)
 participants = response.json()['totalParticipants']
 print(f'\nTotal participants: {participants}')
+
+url = f'/api/v1/administration/projects/{project_id}/participants'
+body_obj = {
+  "invitationStatus": "approved",
+  "demographics": {
+    "email": "d4cg.tech@gmail.com",
+    "firstName": "Luca",
+    "middleName": "",
+    "lastName": "Graglia"
+  },
+  "customFields": {
+    "redCap_id": 1
+  }
+}
+payload = json.dumps(body_obj)
+response = put_to_api(service_access_token, url, body_str=payload) # requests.request("PUT", url, headers=headers, data=payload)
+print(response)
 
 # Get a specific participant by identifier. We disable 'raise_error' here
 # so we can handle the 404 case ourselves.
